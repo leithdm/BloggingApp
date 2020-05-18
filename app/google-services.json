@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "684400297803",
+    "firebase_url": "https://twitter-cd9b8.firebaseio.com",
+    "project_id": "twitter-cd9b8",
+    "storage_bucket": "twitter-cd9b8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:684400297803:android:3982f2ca67e0c6fa634ace",
+        "android_client_info": {
+          "package_name": "com.darrenmleith.twitter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "684400297803-fqt7d6g982chp95fbrbrd92etfapo6h0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXiEdcvFNSx4KnLQX7L62hMM6_kT0VCek"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "684400297803-fqt7d6g982chp95fbrbrd92etfapo6h0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
