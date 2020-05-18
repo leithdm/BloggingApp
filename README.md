@@ -2,6 +2,6 @@
 
 ## RecyclerView and FirebaseRecyclerAdapter are used to present data 
 
-![Snapshot.png]
-![Snapshot1.png]
-![Snapshot2.png]
+![Screenshot](screenshot.png)
+![Screenshot](Screenshot1.png)
+![Screenshot](Screenshot2.png)
