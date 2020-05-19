@@ -191,7 +191,7 @@ public class UserListActivity extends AppCompatActivity {
         } else if (item.getItemId() == R.id.logout) {
             _mAuth.signOut();
             finish();
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
         } else if (item.getItemId() == R.id.twitterFeed) {
             //TODO: shoot over to the Twit Feed Activity

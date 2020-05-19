@@ -2,10 +2,14 @@ package com.darrenmleith.twitter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -18,7 +22,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -56,15 +59,19 @@ public class PostActivity extends AppCompatActivity {
 
         _selectImageButton = findViewById(R.id.imageSelectButton);
         _selectImageButton.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View v) {
-                Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                galleryIntent.setType("image/*");
-                startActivityForResult(galleryIntent, GALLERY_REQUEST);
+                if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                } else {
+                    getPhoto();
+                }
             }
         });
 
         _submitButton.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View v) {
                 startPosting();
@@ -72,23 +79,29 @@ public class PostActivity extends AppCompatActivity {
         });
     }
 
+    public void getPhoto() {
+        Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        galleryIntent.setType("image/*");
+        startActivityForResult(galleryIntent, GALLERY_REQUEST);
+    }
+
     private void startPosting() {
-
-
         final String postTitle = _postTitle.getText().toString().trim();
         final String postDescription = _postDescription.getText().toString().trim();
 
         //post to database and also get the download URL using a Task
         if (!TextUtils.isEmpty(postTitle) && (!TextUtils.isEmpty(postDescription) && _imageURI != null)) {
             _progressBar.setVisibility(View.VISIBLE);
-            final StorageReference filePath = _mFireStorage.child("Blog_Images").child(random());
-            //upload process which is linked to a continueWithTask in order to get the download URL.
+            final StorageReference filePath = _mFireStorage.child("Blog_Images").child(_imageURI.getLastPathSegment());
+            //store the image to firebase Storage using a "putFile"
             filePath.putFile(_imageURI).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                 @Override
                 public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
                     if (!task.isSuccessful()) {
                         throw task.getException();
                     }
+                    //We use a continueWithTask in order to get the download URL. We need the download URL
+                    //when we "putFile" into firebase Storage so that we can also put a reference into the Database for downloading later
                     return filePath.getDownloadUrl();
                 }
             }).addOnCompleteListener(new OnCompleteListener<Uri>() {
@@ -96,13 +109,13 @@ public class PostActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<Uri> task) {
                     _progressBar.setVisibility(View.INVISIBLE);
                     if (task.isSuccessful()) {
-                        Uri downloadUri = task.getResult();
-
+                        Uri downloadUri = task.getResult(); //get the URL of the image
                         DatabaseReference newPost = _mFirebaseDatabase.push();
+                        //post information to the database
                         newPost.child("title").setValue(postTitle);
                         newPost.child("description").setValue(postDescription);
                         newPost.child("imageURL").setValue(downloadUri.toString());
-                        startActivity(new Intent(PostActivity.this, TestActivity.class));
+                        startActivity(new Intent(PostActivity.this, BlogActivity.class));
                     } else {
                         Toast.makeText(PostActivity.this, "upload failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
@@ -118,7 +131,7 @@ public class PostActivity extends AppCompatActivity {
         StringBuilder randomStringBuilder = new StringBuilder();
         int randomLength = generator.nextInt(MAX_LENGTH);
         char tempChar;
-        for (int i = 0; i < randomLength; i++){
+        for (int i = 0; i < randomLength; i++) {
             tempChar = (char) (generator.nextInt(96) + 32);
             randomStringBuilder.append(tempChar);
         }
@@ -133,6 +146,16 @@ public class PostActivity extends AppCompatActivity {
             _imageURI = data.getData();
             Log.i("Image URI", _imageURI.toString());
             _selectImageButton.setImageURI(_imageURI);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == GALLERY_REQUEST) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getPhoto();
+            }
         }
     }
 }

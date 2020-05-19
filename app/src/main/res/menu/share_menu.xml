@@ -6,8 +6,8 @@
         android:icon="@drawable/baseline_add_white_24dp"
         app:showAsAction="always"></item>
 
-    <item android:id="@+id/action_settings"
-        android:title="Settings"
-        app:showAsAction="never"></item>
+
+    <item android:id="@+id/logout"
+        android:title="Logout"></item>
 
 </menu>

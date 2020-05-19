@@ -3,6 +3,7 @@
     package="com.darrenmleith.twitter">
 
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"></uses-permission>
 
     <application
         android:allowBackup="true"
@@ -12,10 +13,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".PostActivity"></activity>
-        <activity android:name=".TestActivity" />
+        <activity android:name=".BlogActivity" />
         <activity android:name=".UserFeedActivity" />
         <activity android:name=".UserListActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
