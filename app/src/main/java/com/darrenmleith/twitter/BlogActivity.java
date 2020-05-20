@@ -47,16 +47,17 @@ public class BlogActivity extends AppCompatActivity {
         super.onStart();
 
         FirebaseRecyclerAdapter<Blog, BlogViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Blog, BlogViewHolder>(
-                Blog.class, //custom class, built entirely with getters/setters and a default constructor, public Blog() {}
+                Blog.class, //custom class, built entirely with getters/setters and a default constructor public Blog()
                 R.layout.blog_row, //custom CardView giving us greater control over what we are presenting. This is the ONLY place we reference this CardView !
                 BlogViewHolder.class, //custom RecyclerView.ViewHolder
-                _mDatabase //this all works because the Blog.class follows the same format as what we have stored in this location
+                _mDatabase //this all works because the Blog.class follows the same format as what we have stored in this reference in the database
         ) {
             @Override
             protected void populateViewHolder(BlogViewHolder blogViewHolder, Blog blog, int i) {
                 blogViewHolder.setTitle(blog.getTitle());
                 blogViewHolder.setDescription(blog.getDescription());
                 blogViewHolder.setImage(getApplicationContext(), blog.getImageURL());
+                blogViewHolder.setEmail(blog.getEmail());
             }
         };
         _blogRecycler.setAdapter(firebaseRecyclerAdapter);
@@ -80,15 +81,21 @@ public class BlogActivity extends AppCompatActivity {
             postTitle.setText(title);
         }
         //set the title text of postTitle within the CardView
-        public void setDescription(String title) {
+        public void setDescription(String description) {
             TextView postDescription = blogView.findViewById(R.id.postDescription);
-            postDescription.setText(title);
+            postDescription.setText(description);
         }
 
         //set the image that is within the CardView using Picasso
         public void setImage(Context context, String imageURL) {
             ImageView imageView = blogView.findViewById(R.id.postImage);
             Picasso.get().load(imageURL).into(imageView);
+        }
+
+        //set the username text
+        public void setEmail(String userText) {
+            TextView email = blogView.findViewById(R.id.usernameTextView);
+            email.setText(userText);
         }
 
     }

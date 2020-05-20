@@ -75,7 +75,11 @@ public class LoginActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         _googleSignInButton = findViewById(R.id.sign_in_button);
+
+        //[START initialize database and keep-synced for off-line
         _mDatabase = FirebaseDatabase.getInstance().getReference();
+        _mDatabase.keepSynced(true);
+        //[END initialize database and keep-synced for off-line
 
         _emailEditText = findViewById(R.id.emailEditText);
         _passwordEditText = findViewById(R.id.passwordEditText);

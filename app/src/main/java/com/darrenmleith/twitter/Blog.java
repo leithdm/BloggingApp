@@ -3,14 +3,18 @@ package com.darrenmleith.twitter;
 public class Blog {
 
     //make sure these match what has been assigned in Firebase database
-    private String description, imageURL, title;
+    private String description;
+    private String imageURL;
+    private String title;
+    private String email;
 
     public Blog() {}
 
-    public Blog(String description, String imageURL, String title) {
+    public Blog(String description, String imageURL, String title, String email) {
         this.description = description;
         this.imageURL = imageURL;
         this.title = title;
+        this.email = email;
     }
 
     public String getDescription() {
@@ -36,4 +40,8 @@ public class Blog {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    public String getEmail() { return email; }
+
+    public void setEmail(String email) { this.email = email; }
 }

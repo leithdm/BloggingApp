@@ -23,8 +23,12 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -43,6 +47,9 @@ public class PostActivity extends AppCompatActivity {
     private StorageReference _mFireStorage;
     private ProgressBar _progressBar;
     private DatabaseReference _mFirebaseDatabase;
+    private FirebaseAuth _mAuth;
+    private DatabaseReference _mDatabaseUser;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +63,8 @@ public class PostActivity extends AppCompatActivity {
         _mFirebaseDatabase = FirebaseDatabase.getInstance().getReference().child("Blog");
         _progressBar = findViewById(R.id.progressBar);
         _progressBar.setVisibility(View.INVISIBLE);
+        _mAuth = FirebaseAuth.getInstance();
+        _mDatabaseUser = FirebaseDatabase.getInstance().getReference().child("users").child(_mAuth.getCurrentUser().getUid());
 
         _selectImageButton = findViewById(R.id.imageSelectButton);
         _selectImageButton.setOnClickListener(new View.OnClickListener() {
@@ -109,13 +118,34 @@ public class PostActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<Uri> task) {
                     _progressBar.setVisibility(View.INVISIBLE);
                     if (task.isSuccessful()) {
-                        Uri downloadUri = task.getResult(); //get the URL of the image
-                        DatabaseReference newPost = _mFirebaseDatabase.push();
-                        //post information to the database
-                        newPost.child("title").setValue(postTitle);
-                        newPost.child("description").setValue(postDescription);
-                        newPost.child("imageURL").setValue(downloadUri.toString());
-                        startActivity(new Intent(PostActivity.this, BlogActivity.class));
+                        final Uri downloadUri = task.getResult(); //get the URL of the image
+                        final DatabaseReference newPost = _mFirebaseDatabase.push();
+
+                        //we will use a valueEventListenet to get the email of the logged in user as per _mDatabaseUser reference location.
+                        //Proper architecture would have this as the username, not the email
+                        _mDatabaseUser.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                //post information to the database
+                                newPost.child("title").setValue(postTitle);
+                                newPost.child("description").setValue(postDescription);
+                                newPost.child("imageURL").setValue(downloadUri.toString());
+                                newPost.child("uid").setValue(_mAuth.getCurrentUser().getUid());
+                                newPost.child("email").setValue(dataSnapshot.child("email").getValue()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        startActivity(new Intent(PostActivity.this, BlogActivity.class));
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+
                     } else {
                         Toast.makeText(PostActivity.this, "upload failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }

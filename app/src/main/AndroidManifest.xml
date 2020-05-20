@@ -16,6 +16,7 @@
         <activity android:name=".BlogActivity" />
         <activity android:name=".UserFeedActivity" />
         <activity android:name=".UserListActivity" />
+        <activity android:name=".Twitter" />
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
