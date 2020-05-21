@@ -8,11 +8,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -54,10 +56,23 @@ public class BlogActivity extends AppCompatActivity {
         ) {
             @Override
             protected void populateViewHolder(BlogViewHolder blogViewHolder, Blog blog, int i) {
+
+                //using getRef(i) method of firebase to get the entire address of the Blog within firebase database. This is pretty cool and powerful
+                //very simple line of code to get the object
+                final String postKey = getRef(i).getKey();
+
                 blogViewHolder.setTitle(blog.getTitle());
                 blogViewHolder.setDescription(blog.getDescription());
                 blogViewHolder.setImage(getApplicationContext(), blog.getImageURL());
                 blogViewHolder.setEmail(blog.getEmail());
+
+                //[START set on-click listener for the RecycleView so we can click on an item in the Recycle View
+                blogViewHolder.blogView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(BlogActivity.this, postKey, Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         };
         _blogRecycler.setAdapter(firebaseRecyclerAdapter);
@@ -69,15 +84,27 @@ public class BlogActivity extends AppCompatActivity {
 
         //create a View object and assign it the value of itemView
         View blogView;
+        TextView postTitle;
 
         public BlogViewHolder(@NonNull View itemView) {
             super(itemView);
             blogView = itemView;
+
+            postTitle = blogView.findViewById(R.id.postTitle);
+            postTitle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i("Title that was clicked", "Clicked a wee title");
+                }
+            });
+
         }
         //set the title text of postTitle within the CardView
-
+        //2nd part to this is setting an onclick listener so can select the post
         public void setTitle(String title) {
-            TextView postTitle = blogView.findViewById(R.id.postTitle);
+
+
+            //TextView postTitle = blogView.findViewById(R.id.postTitle);
             postTitle.setText(title);
         }
         //set the title text of postTitle within the CardView
