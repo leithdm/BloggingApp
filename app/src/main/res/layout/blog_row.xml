@@ -46,5 +46,23 @@
             android:textSize="12sp"
             android:textStyle="bold" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/likeButton"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_weight="1"
+                android:background="#00FFFFFF"
+                android:scaleType="fitStart"
+                app:srcCompat="@drawable/like" />
+        </LinearLayout>
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>
